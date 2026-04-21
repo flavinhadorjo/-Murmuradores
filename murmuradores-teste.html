@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste — Murmuradores | Sinomar Fernandes</title>
+<meta name="description" content="Teste baseado no livro Murmuradores de Sinomar Fernandes. Descubra onde você está e receba uma palavra de direção.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple-50: #EEEDFE;
+    --purple-100: #CECBF6;
+    --purple-200: #AFA9EC;
+    --purple-400: #7F77DD;
+    --purple-600: #534AB7;
+    --purple-800: #3C3489;
+    --teal-50: #E1F5EE;
+    --teal-400: #1D9E75;
+    --teal-600: #0F6E56;
+    --teal-800: #085041;
+    --blue-50: #E6F1FB;
+    --blue-400: #378ADD;
+    --blue-600: #185FA5;
+    --blue-800: #0C447C;
+    --amber-50: #FAEEDA;
+    --amber-400: #EF9F27;
+    --amber-600: #BA7517;
+    --amber-800: #633806;
+    --coral-50: #FAECE7;
+    --coral-400: #D85A30;
+    --coral-600: #993C1D;
+    --coral-800: #712B13;
+    --text-primary: #1a1a1a;
+    --text-secondary: #555;
+    --text-tertiary: #888;
+    --border: #e0e0e0;
+    --bg: #ffffff;
+    --bg-surface: #f8f8f8;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text-primary: #f0f0f0;
+      --text-secondary: #bbb;
+      --text-tertiary: #777;
+      --border: #2e2e2e;
+      --bg: #1a1a1a;
+      --bg-surface: #242424;
+      --purple-50: #26215C;
+      --purple-100: #3C3489;
+      --purple-200: #534AB7;
+      --teal-50: #04342C;
+      --teal-400: #1D9E75;
+      --blue-50: #042C53;
+      --blue-400: #378ADD;
+      --amber-50: #412402;
+      --amber-400: #EF9F27;
+      --coral-50: #4A1B0C;
+      --coral-400: #D85A30;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  .page { max-width: 620px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  .brand { font-size: 12px; color: var(--text-tertiary); margin-bottom: 2rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .hero { margin-bottom: 2rem; }
+  .hero h1 { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; line-height: 1.3; }
+  .hero p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 4px; }
+  .hero .ref { font-size: 13px; color: var(--purple-400); font-style: italic; }
+
+  .progress-wrap { margin-bottom: 1.5rem; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+  .progress-fill { height: 100%; background: var(--purple-400); border-radius: 2px; transition: width 0.35s ease; }
+  .progress-label { font-size: 12px; color: var(--text-tertiary); display: flex; justify-content: space-between; }
+
+  .q-tag { display: inline-block; font-size: 11px; font-weight: 600; color: var(--purple-600); background: var(--purple-50); padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; }
+  .q-text { font-size: 16px; font-weight: 600; color: var(--text-primary); line-height: 1.6; margin-bottom: 16px; }
+
+  .opts { display: flex; flex-direction: column; gap: 10px; }
+  .opt { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; background: var(--bg); text-align: left; width: 100%; transition: border-color 0.15s, background 0.15s; font-family: inherit; }
+  .opt:hover { border-color: var(--purple-400); }
+  .opt.sel { border-color: var(--purple-400); background: var(--purple-50); }
+  .opt-ltr { font-size: 13px; font-weight: 700; color: var(--text-tertiary); min-width: 20px; margin-top: 1px; }
+  .opt.sel .opt-ltr { color: var(--purple-600); }
+  .opt-txt { font-size: 14px; color: var(--text-primary); line-height: 1.55; }
+
+  .nav { display: flex; gap: 10px; margin-top: 1.5rem; justify-content: space-between; align-items: center; }
+  .nav-right { display: flex; gap: 10px; }
+  .btn { padding: 11px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-primary); font-family: inherit; transition: background 0.15s; }
+  .btn:hover { background: var(--bg-surface); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn-primary { background: var(--purple-400); color: white; border-color: var(--purple-400); }
+  .btn-primary:hover { background: var(--purple-600); border-color: var(--purple-600); }
+  .btn-primary:disabled { background: var(--purple-400); opacity: 0.3; }
+
+  /* RESULT */
+  .result { display: none; animation: fadeIn 0.4s ease; }
+  .result.show { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-card { padding: 1.75rem; border-radius: var(--radius-lg); border: 1px solid; margin-bottom: 1.5rem; }
+  .result-label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; }
+  .result-title { font-size: 22px; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+  .result-desc { font-size: 15px; line-height: 1.75; margin-bottom: 16px; }
+
+  .score-section { margin: 1rem 0 1.25rem; }
+  .score-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+  .score-track { height: 6px; background: rgba(0,0,0,0.1); border-radius: 3px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+
+  .result-verse { font-size: 13px; font-style: italic; line-height: 1.7; border-left: 3px solid; padding-left: 14px; margin-bottom: 14px; }
+  .result-action { font-size: 14px; line-height: 1.7; padding: 14px; border-radius: var(--radius); border: 1px solid; }
+  .result-action strong { font-weight: 600; display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .result-restart { margin-top: 1.5rem; text-align: center; }
+
+  .footer-page { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-tertiary); text-align: center; line-height: 1.8; }
+
+  @media (max-width: 480px) {
+    .page { padding: 1.5rem 1rem 3rem; }
+    .hero h1 { font-size: 20px; }
+    .q-text { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="brand">Baseado no livro Murmuradores — Sinomar Fernandes</div>
+
+  <div id="quiz">
+    <div class="hero">
+      <h1>Você é murmuradora?</h1>
+      <p>10 perguntas honestas baseadas nos capítulos do livro. Sem respostas óbvias — seja franca consigo mesma.</p>
+      <p class="ref">Baseado em Murmuradores — Sinomar Fernandes</p>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+      <div class="progress-label">
+        <span id="pt">Pergunta 1 de 10</span>
+        <span id="pct">0%</span>
+      </div>
+    </div>
+
+    <div id="qc"></div>
+
+    <div class="nav">
+      <button class="btn" id="bb" onclick="back()" disabled>← Voltar</button>
+      <button class="btn btn-primary" id="bn" onclick="next()" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <div id="result" class="result"></div>
+
+  <div class="footer-page">
+    Baseado em <em>Murmuradores</em> — Sinomar Fernandes · Editora Luz Para os Povos<br>
+    Para uso pessoal, discipulado e grupos de estudo bíblico
+  </div>
+
+</div>
+
+<script>
+const qs = [
+  {
+    tag: "A língua",
+    text: "Quando você fala algo negativo sobre alguém, para onde vai essa conversa?",
+    opts: [
+      { text: "Para Deus — termina em oração por aquela pessoa ou situação", score: 0 },
+      { text: "Para alguém que pode ajudar a resolver o problema de verdade", score: 1 },
+      { text: "Para alguém de confiança, mas que também não pode mudar nada", score: 2 },
+      { text: "Para quem vai concordar comigo e validar o que sinto", score: 3 }
+    ]
+  },
+  {
+    tag: "Insatisfação",
+    text: "O livro aponta que 'o primeiro parafuso que fica frouxo na cabeça dos insatisfeitos é o que controla a língua.' Como você lida com decisões que não foram suas?",
+    opts: [
+      { text: "Aceito com paz, mesmo quando discordo — e oro", score: 0 },
+      { text: "Processo internamente e depois sigo em frente", score: 1 },
+      { text: "Fico ruminando e acabo comentando com pessoas próximas", score: 2 },
+      { text: "Dificilmente aceito bem o que não pude influenciar", score: 3 }
+    ]
+  },
+  {
+    tag: "Inveja",
+    text: "O livro diz que a inveja foi o que motivou os sacerdotes a entregarem Jesus. Quando alguém próximo é honrado ou promovido, o que acontece dentro de você?",
+    opts: [
+      { text: "Alegria genuína — me alegro com quem se alegra", score: 0 },
+      { text: "Neutralidade — não me afeta muito", score: 1 },
+      { text: "Uma pontada que passo rápido, mas existe", score: 2 },
+      { text: "Um desconforto que às vezes vira comentário", score: 3 }
+    ]
+  },
+  {
+    tag: "Amargura",
+    text: "Sinomar escreve: 'A pessoa amarga ouve o que não foi dito, vê o que não existe.' Existe alguém com quem você ainda não fez as pazes internamente?",
+    opts: [
+      { text: "Não — resolvi ou estou ativamente resolvendo", score: 0 },
+      { text: "Há situações antigas que ainda doem, mas oro", score: 1 },
+      { text: "Sim, e essa pessoa aparece frequentemente nas minhas conversas", score: 2 },
+      { text: "Sim, e carrego isso há mais tempo do que deveria", score: 3 }
+    ]
+  },
+  {
+    tag: "Autoridade",
+    text: "O livro dedica muito espaço ao caso de Corá — que usava linguagem de 'direitos do povo' para esconder ambição pessoal. Quando você questiona líderes, o que te move?",
+    opts: [
+      { text: "Preocupação genuína com o impacto no grupo ou no Reino de Deus", score: 0 },
+      { text: "Busca de clareza — preciso entender para poder confiar", score: 1 },
+      { text: "Frustração de não ter voz ou não ser considerada", score: 2 },
+      { text: "Dificuldade com qualquer autoridade que não escolhi", score: 3 }
+    ]
+  },
+  {
+    tag: "Hipocrisia",
+    text: "O livro descreve o hipócrita como 'um punhal — uma lâmina assassina engastada numa cruz.' Você fala de espiritualidade com o mesmo nível que vive?",
+    opts: [
+      { text: "Busco coerência — o que falo reflete onde estou com Deus", score: 0 },
+      { text: "Às vezes exagero o que aparento para não decepcionar", score: 1 },
+      { text: "Falo mais do que vivo — sei que preciso crescer nisso", score: 2 },
+      { text: "Uso linguagem espiritual para validar o que já quero fazer", score: 3 }
+    ]
+  },
+  {
+    tag: "Ingratidão",
+    text: "Jesus ficou decepcionado quando nove dos dez leprosos curados não voltaram para agradecer. O livro diz que 'a ingratidão é a lepra do coração.' Como está sua gratidão?",
+    opts: [
+      { text: "Viva — agradeço ativamente e isso guia minha fala sobre os outros", score: 0 },
+      { text: "Presente, mas nem sempre expressada", score: 1 },
+      { text: "Inconsistente — boa nos dias bons, fraca nos difíceis", score: 2 },
+      { text: "Difícil — o que falta pesa mais do que o que tenho", score: 3 }
+    ]
+  },
+  {
+    tag: "Orgulho",
+    text: "Sinomar escreve: 'Os murmuradores são todos orgulhosos — olham as pessoas de cima para baixo.' Quando você critica alguém, existe uma sensação de superioridade?",
+    opts: [
+      { text: "Não — me reconheço falível antes de falar", score: 0 },
+      { text: "Às vezes — percebo depois que havia julgamento no tom", score: 1 },
+      { text: "Com algumas pessoas específicas, sim", score: 2 },
+      { text: "É difícil admitir, mas frequentemente sim", score: 3 }
+    ]
+  },
+  {
+    tag: "Consequências",
+    text: "O livro afirma: 'Nenhum dos murmuradores que saíram do Egito entrou na terra prometida.' Existe algo em sua vida que parece travado, sem avançar?",
+    opts: [
+      { text: "Não percebo isso — estou em movimento com Deus", score: 0 },
+      { text: "Há áreas estagnadas mas não sei conectar ao porquê", score: 1 },
+      { text: "Sinto que algo me impede mas nunca examinei minha língua", score: 2 },
+      { text: "Sim, e essa pergunta me fez pensar em algo específico", score: 3 }
+    ]
+  },
+  {
+    tag: "O caminho",
+    text: "O livro termina com Fp 2.14: 'Fazei tudo sem murmuração nem contendas.' Depois de responder esse teste, o que você percebe sobre sua língua?",
+    opts: [
+      { text: "Estou bem — minha língua tem servido ao Reino com integridade", score: 0 },
+      { text: "Tenho pontos de atenção mas estou no caminho certo", score: 1 },
+      { text: "Preciso mudar alguns padrões — isso me desafiou", score: 2 },
+      { text: "Esse teste me mostrou algo que preciso levar a Deus com urgência", score: 3 }
+    ]
+  }
+];
+
+const results = [
+  {
+    min: 0, max: 8,
+    label: "Espírito de intercessora",
+    title: "Sua língua está a serviço do Reino",
+    desc: "Suas palavras sobre os outros são raras, direcionadas e terminam em ação ou oração. O que você carrega sobre as pessoas vai para Deus antes de ir para qualquer outra boca. Isso não é silêncio passivo — é discernimento ativo.",
+    verse: '"Não saia da vossa boca nenhuma palavra torpe, e sim unicamente a que for boa para edificação, conforme a necessidade, e, assim, transmita graça aos que ouvem." — Ef 4.29',
+    action: "Atenção: o único risco para quem tem esse perfil é guardar demais. Nem sempre é prudente processar tudo sozinha. Há momentos em que falar é obediência, não fraqueza.",
+    actionLabel: "Para crescer",
+    color: { bg: "#E1F5EE", border: "#1D9E75", label: "#0F6E56", title: "#085041", fill: "#1D9E75", verse: "#1D9E75", action: "#E1F5EE", actionBorder: "#1D9E75", actionText: "#085041" }
+  },
+  {
+    min: 9, max: 16,
+    label: "Zelotismo saudável",
+    title: "Você fala com propósito — não com veneno",
+    desc: "Você fala quando é necessário, com propósito claro e consciência do efeito. Seu incômodo com injustiça é legítimo e seu coração busca solução — não audiência. O Sinomar Fernandes não estava escrevendo sobre você.",
+    verse: '"Irmãos, se alguém for surpreendido nalguma falta, vós, que sois espirituais, corrigi-o com espírito de brandura." — Gl 6.1',
+    action: "Observe se existe alguma pessoa específica sobre quem você fala com mais frequência do que outras. Pode haver uma ferida não resolvida que merece atenção direta — não mais conversa, mas confronto amoroso ou perdão.",
+    actionLabel: "Para crescer",
+    color: { bg: "#E6F1FB", border: "#378ADD", label: "#185FA5", title: "#0C447C", fill: "#378ADD", verse: "#185FA5", action: "#E6F1FB", actionBorder: "#378ADD", actionText: "#0C447C" }
+  },
+  {
+    min: 17, max: 24,
+    label: "Zona de atenção",
+    title: "Seu coração é bom — mas a língua precisa de freio",
+    desc: "Seu coração é genuíno — você realmente quer o bem. Mas às vezes a necessidade de ser compreendida ultrapassa a necessidade de agir. Você fala com pessoas certas, mas nem sempre para os fins certos. Sinomar escreve: 'A insatisfação é a sepultura da igreja.'",
+    verse: '"Refreia a língua do mal e os lábios de falarem dolosamente." — Sl 34.13',
+    action: "Nas próximas conversas sobre problemas alheios, faça uma pergunta antes de falar: 'Estou buscando clareza para agir — ou validação para me sentir certa?' Uma te move. A outra te prende.",
+    actionLabel: "Passo concreto",
+    color: { bg: "#FAEEDA", border: "#EF9F27", label: "#BA7517", title: "#633806", fill: "#EF9F27", verse: "#BA7517", action: "#FAEEDA", actionBorder: "#EF9F27", actionText: "#633806" }
+  },
+  {
+    min: 25, max: 30,
+    label: "Convite à transformação",
+    title: "Há padrões que o Espírito quer curar",
+    desc: "Sua honestidade em responder assim já é um sinal de saúde espiritual. O livro de Sinomar tem algo a dizer para você — não para te condenar, mas para te libertar. Ele escreve: 'A murmuração pode ser comparada a um câncer destruidor.' Mas cânceres têm cura quando tratados a tempo.",
+    verse: '"Nem murmureis, como alguns deles murmuraram e foram destruídos pelo exterminador." — 1 Co 10.10',
+    action: "Escolha uma pessoa sobre quem você tem falado e ore por ela especificamente por 7 dias. Não sobre ela — por ela. Com nome, com intenção, com amor. Veja o que muda no seu coração antes de mudar nas suas palavras.",
+    actionLabel: "Passo de hoje",
+    color: { bg: "#FAECE7", border: "#D85A30", label: "#993C1D", title: "#712B13", fill: "#D85A30", verse: "#993C1D", action: "#FAECE7", actionBorder: "#D85A30", actionText: "#712B13" }
+  }
+];
+
+let cur = 0;
+let picks = new Array(qs.length).fill(null);
+
+function render() {
+  const q = qs[cur];
+  const pct = Math.round((cur / qs.length) * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('pt').textContent = 'Pergunta ' + (cur + 1) + ' de ' + qs.length;
+  document.getElementById('pct').textContent = pct + '%';
+
+  const sel = picks[cur];
+  document.getElementById('qc').innerHTML =
+    '<div>' +
+    '<div class="q-tag">' + q.tag + '</div>' +
+    '<div class="q-text">' + q.text + '</div>' +
+    '<div class="opts">' +
+    q.opts.map(function(o, i) {
+      return '<button class="opt' + (sel === i ? ' sel' : '') + '" onclick="pick(' + i + ')">' +
+        '<span class="opt-ltr">' + String.fromCharCode(65 + i) + '</span>' +
+        '<span class="opt-txt">' + o.text + '</span>' +
+        '</button>';
+    }).join('') +
+    '</div></div>';
+
+  document.getElementById('bb').disabled = cur === 0;
+  document.getElementById('bn').disabled = sel === null;
+  document.getElementById('bn').textContent = cur === qs.length - 1 ? 'Ver resultado →' : 'Próxima →';
+}
+
+function pick(i) { picks[cur] = i; render(); }
+function back() { if (cur > 0) { cur--; render(); } }
+
+function next() {
+  if (picks[cur] === null) return;
+  if (cur === qs.length - 1) { showResult(); }
+  else { cur++; render(); }
+}
+
+function showResult() {
+  var total = picks.reduce(function(sum, a, i) { return sum + qs[i].opts[a].score; }, 0);
+  var max = qs.length * 3;
+  var pct = Math.round((total / max) * 100);
+
+  var r = results[0];
+  for (var i = 0; i < results.length; i++) {
+    if (total >= results[i].min && total <= results[i].max) { r = results[i]; break; }
+  }
+  var c = r.color;
+
+  document.getElementById('quiz').style.display = 'none';
+
+  var html =
+    '<div class="result-card" style="background:' + c.bg + ';border-color:' + c.border + '">' +
+    '<div class="result-label" style="color:' + c.label + '">' + r.label + '</div>' +
+    '<div class="result-title" style="color:' + c.title + '">' + r.title + '</div>' +
+    '<div class="score-section">' +
+    '<div class="score-row"><span style="color:' + c.label + '">Tendência para murmuração</span><span style="color:' + c.label + '">' + pct + '%</span></div>' +
+    '<div class="score-track"><div class="score-fill" style="width:' + pct + '%;background:' + c.fill + '"></div></div>' +
+    '</div>' +
+    '<div class="result-desc" style="color:' + c.title + '">' + r.desc + '</div>' +
+    '<div class="result-verse" style="color:' + c.label + ';border-color:' + c.border + '">' + r.verse + '</div>' +
+    '<div class="result-action" style="background:' + c.action + ';border-color:' + c.actionBorder + ';color:' + c.actionText + '">' +
+    '<strong style="color:' + c.label + '">' + r.actionLabel + '</strong>' + r.action +
+    '</div>' +
+    '</div>' +
+    '<div class="result-restart">' +
+    '<button class="btn" onclick="restart()">← Refazer o teste</button>' +
+    '</div>';
+
+  var el = document.getElementById('result');
+  el.innerHTML = html;
+  el.classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+  cur = 0;
+  picks = new Array(qs.length).fill(null);
+  document.getElementById('quiz').style.display = 'block';
+  var el = document.getElementById('result');
+  el.classList.remove('show');
+  el.innerHTML = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
